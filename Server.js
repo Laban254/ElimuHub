@@ -1,13 +1,15 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const app = express();
-const port = process.env.PORT || 3000; 
 
-// Middleware for parsing JSON in request bodies (if needed)
-app.use(bodyParser.json());
+// load the environment variable configurations
+require ('dotenv').config();
+
+const port = process.env.PORT || 3000;
 
 // Define your API routes
-// app.use('/api', require('./routes/api')); 
+app.use('/api', require('./routes/general.routes.js'));
+app.use('/api/system-admin',require('./routes/system-admin.routes.js'));
+app.use('/api/school-admin', require('./routes/school-admin.routes.js'))
 
 // Default route for handling undefined routes
 app.use((req, res) => {
