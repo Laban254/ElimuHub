@@ -30,4 +30,3 @@ const delete_user = async(req, res) => {
 
 
 module.exports = {home, delete_user};
-
