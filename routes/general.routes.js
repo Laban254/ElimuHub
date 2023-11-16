@@ -7,7 +7,7 @@ const router = express.Router();
 
 // insert all the main routes associated with the general user under
 router.get("/", home);
-router.post("/delete_user", delete_user);
+router.delete("/delete_user/:userId", delete_user);
 
 module.exports = router;
 
