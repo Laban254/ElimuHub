@@ -21,12 +21,12 @@ const accesSchema = new schema({
     },
     authKey: {
         type: String,
-        unique: true
+        unique: true,
+        default: undefined
     }
 
 
 });
 
-const accesKey = mongoose.model('mentor', accesSchema);
-
+const accesKey = mongoose.model('acces-key', accesSchema);
 module.exports = accesKey;
