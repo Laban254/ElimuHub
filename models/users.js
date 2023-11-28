@@ -2,7 +2,7 @@
 // The information associated to this model is the user email, password, and user type.
 const mongoose = require('mongoose');
 const schema = mongoose.Schema;
-const bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 const logInSchema = new schema({
     email: {
