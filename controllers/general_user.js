@@ -1,5 +1,6 @@
 
 // This file contains all the controls related to any user of the system
+const User = require('../models/users');
 
 const home = (req, res) => {
     console.log("Welcome to ElimuHub :)");
@@ -7,7 +8,7 @@ const home = (req, res) => {
 }
 
 const delete_user = async(req, res) => {
-    const userId = req.session.userId;
+    const userId = req.params.userId;
 
   if (!userId) {
     return res.status(401).json({ message: 'User not authenticated' });

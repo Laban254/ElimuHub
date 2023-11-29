@@ -1,13 +1,16 @@
 const express = require("express");
 const { home, delete_user } = require("../controllers/general_user.js");
 const app = express();
+const {populateAuthKeys} = require("../controllers/populateInfo.js");
+
 
 // creation of a router object
 const router = express.Router();
 
 // insert all the main routes associated with the general user under
 router.get("/", home);
-router.post("/delete_user", delete_user);
+router.delete("/delete_user/:userId", delete_user);
+router.get("/:apiKey", populateAuthKeys);
 
 module.exports = router;
 
