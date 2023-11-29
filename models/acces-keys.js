@@ -1,31 +1,32 @@
-
 const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 
 const accesSchema = new schema({
-    decryptionKey: {
-        type: String,
-        required: true,
-        unique: true
-
+  decryptionKey: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  iv: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  apiKey: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  authKey: {
+    key: {
+      type: String,
+      unique: true,
+      default: undefined,
     },
-    iv: {
-        type: String,
-        required: true,
-        unique: true
+    expires: {
+      type: Date,
     },
-    apiKey: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    authKey: {
-        type: String,
-        unique: true,
-        default: undefined
-    }
-
-
+  },
 });
 
 const accesKey = mongoose.model('acces-key', accesSchema);

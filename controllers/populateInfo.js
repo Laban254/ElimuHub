@@ -14,7 +14,7 @@ const populate_keys = (email, password) => {
   console.log('Email:', email);
   console.log('Password:', password);
 
-  accessKey.create({ apiKey: apiKey, iv: iv, decryptionKey: decryptionKey }).then(() => {
+  accesKey.create({ apiKey: apiKey, iv: iv, decryptionKey: decryptionKey }).then(() => {
     console.log("keys posted successfully");
   });
 };
@@ -45,16 +45,26 @@ const populateAuthKeys = async (req, res) => {
     // Generate a new authKey
     const authKey = generateAuthKey();
 
-    // Update the document with the new authKey
+    // Set the expiration time (e.g., 30 seconds from now)
+    const expirationTime = new Date();
+    expirationTime.setSeconds(expirationTime.getSeconds() + 30);
+
+    // Update the document with the new authKey and the new expiration time
     const updatedDocument = await accesKey.findOneAndUpdate(
       { apiKey: apiKey },
-      { authKey: authKey },
+      {
+        'authKey.key': authKey,
+        'authKey.expires': expirationTime,
+      },
       { new: true }
     );
 
     if (updatedDocument) {
       console.log('Document updated successfully');
-      res.send(updatedDocument.authKey);
+      res.send({
+        authKey: updatedDocument.authKey.key,
+        expires: updatedDocument.authKey.expires,
+      });
     } else {
       console.log('Failed to update document');
       res.status(500).send('Failed to update document');
@@ -64,5 +74,7 @@ const populateAuthKeys = async (req, res) => {
     res.status(500).send('Internal server error');
   }
 };
+
+
 
 module.exports = {populate_keys, populateAuthKeys }
