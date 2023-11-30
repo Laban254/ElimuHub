@@ -4,7 +4,7 @@ const User = require('../models/users');
 
 const home = (req, res) => {
     console.log("Welcome to ElimuHub :)");
-    res.end("Welcome to ElimuHub :)");
+    res.send("Welcome to ElimuHub :)");
 }
 
 const delete_user = async(req, res) => {
