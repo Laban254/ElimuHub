@@ -1,13 +1,7 @@
 const express = require("express");
-
-
-
 const { home, delete_user, logIn } = require("../controllers/general_user.js");
 
 const {populateAuthKeys} = require("../controllers/populateInfo.js");
-
-
-
 // creation of a router object
 const router = express.Router();
 router.use(express.json())
