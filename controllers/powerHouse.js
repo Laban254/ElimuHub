@@ -4,6 +4,7 @@
 const qrcode = require('qrcode');
 const fs = require('fs');
 const crypto = require('crypto');
+const user  = require("../models/users");
 
 const generateQRCode = async (url, filename) => {
   try {
@@ -98,5 +99,14 @@ const decryptApiKey = async (encryptedApiKey, decryptionKeyString, ivString) => 
 };
 
 
+const findUserByEmailAndPassword = async (email, password) => {
+  try {
+    const user = await Users.findOne({ email, password });
+    return user;
+  } catch (error) {
+    console.error('Error finding user:', error);
+    throw new Error('Error finding user');
+  }
+};
 
-module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey};
+module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey, findUserByEmailAndPassword}
