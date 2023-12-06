@@ -4,6 +4,7 @@
 const qrcode = require('qrcode');
 const fs = require('fs');
 const crypto = require('crypto');
+const user  = require("../models/users");
 
 const express = require('express');
 const session = require('express-session');
@@ -104,9 +105,52 @@ const generateApiKey = (email, password) => {
   let encryptedData = cipher.update(dataToEncryptString, 'utf-8', 'hex');
   encryptedData += cipher.final('hex');
 
-  return { key: key, iv: iv, encryptedData: encryptedData };
+  // Convert key and iv to hexadecimal strings
+  const keyHex = key.toString('hex');
+  const ivHex = iv.toString('hex');
+
+  return { key: keyHex, iv: ivHex, encryptedData: encryptedData };
 };
 
 
 
-module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, generateAndPopulateSession, CheckSessionValidity};
+
+const algorithm = 'aes-256-cbc';
+
+const decryptApiKey = async (encryptedApiKey, decryptionKeyString, ivString) => {
+  try {
+    // Convert string representations to Buffer objects
+    const decryptionKey = Buffer.from(decryptionKeyString, 'hex');
+    const iv = Buffer.from(ivString, 'hex');
+
+    // Convert encryptedApiKey to a Buffer
+    const encryptedBuffer = Buffer.from(encryptedApiKey, 'hex');
+
+    // Decrypt the buffer using the appropriate algorithm and key
+    const decipher = crypto.createDecipheriv(algorithm, decryptionKey, iv);
+
+    // Decrypt the buffer and convert it to a string
+    let decrypted = decipher.update(encryptedBuffer, 'binary', 'utf-8');
+    decrypted += decipher.final('utf-8');
+
+    return decrypted;
+  } catch (error) {
+    console.error('Error in decryptApiKey:', error);
+    throw new Error('Failed to decrypt API key');
+  }
+};
+
+
+const findUserByEmailAndPassword = async (email, password) => {
+  try {
+    const user = await Users.findOne({ email, password });
+    return user;
+  } catch (error) {
+    console.error('Error finding user:', error);
+    throw new Error('Error finding user');
+  }
+};
+
+
+module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey, findUserByEmailAndPassword ,generateAndPopulateSession, CheckSessionValidity};
+

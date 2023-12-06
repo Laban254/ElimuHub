@@ -1,5 +1,5 @@
 
-const {generateApiKey, generateAuthKey} = require("./powerHouse")
+const {generateApiKey, generateAuthKey, decryptApiKey} = require("./powerHouse")
 const accesKey = require('../models/acces-keys');
 
 
@@ -34,6 +34,7 @@ const populateAuthKeys = async (req, res) => {
     // Log information about the received apiKey
     console.log('Received apiKey:', apiKey, 'Length:', apiKey.length);
 
+
     // Check if the document with the specified apiKey exists
     const existingDocument = await accesKey.findOne({ apiKey: apiKey });
 
@@ -42,28 +43,40 @@ const populateAuthKeys = async (req, res) => {
       return res.status(404).send('No document found with the provided apiKey');
     }
 
+    // Retrieve decryptionKeyString and ivString from the database document
+    const decryptionKeyString = existingDocument.decryptionKey;
+    const ivString = existingDocument.iv;
+    // Convert string representations to Buffer objects
+    const decryptionKey = Buffer.from(decryptionKeyString, 'hex');
+    const iv = Buffer.from(ivString, 'hex');
+
+    // Decrypt the apiKey
+    let decrypted;
+    try {
+      decrypted = await decryptApiKey(apiKey, decryptionKey, iv);
+      console.log('Decrypted API Key:', decrypted);
+    } catch (decryptError) {
+      console.error('Error decrypting API Key:', decryptError.message);
+      return res.status(400).send('Error decrypting API Key');
+    }
+
     // Generate a new authKey
     const authKey = generateAuthKey();
 
-    // Set the expiration time (e.g., 30 seconds from now)
-    const expirationTime = new Date();
-    expirationTime.setSeconds(expirationTime.getSeconds() + 30);
+  
 
     // Update the document with the new authKey and the new expiration time
     const updatedDocument = await accesKey.findOneAndUpdate(
       { apiKey: apiKey },
       {
-        'authKey.key': authKey,
-        'authKey.expires': expirationTime,
-      },
+        authKey: authKey},
       { new: true }
     );
 
     if (updatedDocument) {
       console.log('Document updated successfully');
       res.send({
-        authKey: updatedDocument.authKey.key,
-        expires: updatedDocument.authKey.expires,
+        authKey: updatedDocument.authKey
       });
     } else {
       console.log('Failed to update document');
