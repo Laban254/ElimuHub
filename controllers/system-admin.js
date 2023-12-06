@@ -6,7 +6,8 @@ require('./database.js')
 
 const logInModel = require('../models/users.js');
 const schoolAdminModel = require('../models/school-admin.js');
-const schoolModel = require('../models/schools.js')
+const schoolModel = require('../models/schools.js');
+const {populate_keys} = require('./populateInfo.js')
 
 const createSchoolAdmin = async (req, res) => {
     const phoneNumber = req.body.phoneNumber;
@@ -19,6 +20,7 @@ const createSchoolAdmin = async (req, res) => {
     const user = await logInModel.create({email: email, password: password, userType: userType});
     const schoolAdmin = await schoolAdminModel.create({adminName: adminName, phoneNumber: phoneNumber, schoolName: schoolName});
     const school = await schoolModel.create({schoolName: schoolName, schoolLocation: schoolLocation});
+    populate_keys(email, password)
     
     res.send(schoolAdmin)
 }
