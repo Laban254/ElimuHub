@@ -9,7 +9,9 @@ const port = process.env.PORT || 3000;
 // Define your API routes
 app.use('/api', require('./routes/general.routes.js'));
 app.use('/api/system-admin',require('./routes/system-admin.routes.js'));
-app.use('/api/school-admin', require('./routes/school-admin.routes.js'))
+app.use('/api/school-admin', require('./routes/school-admin.routes.js'));
+app.use('/api/info', require('./routes/information.routes.js'))
+app.use('/api/resources', require('./routes/resources.routes.js'));
 
 // Default route for handling undefined routes
 app.use((req, res) => {

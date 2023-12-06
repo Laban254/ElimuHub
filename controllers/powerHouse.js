@@ -1,10 +1,52 @@
 // This module contains all the controllers reponsible for generations
-// Contains controllers of QRcodes, passwords
+// Contains controllers of QRcodes, passwords, sessions and e.t.c
 
 const qrcode = require('qrcode');
 const fs = require('fs');
 const crypto = require('crypto');
 const user  = require("../models/users");
+
+const express = require('express');
+const session = require('express-session');
+
+const app = express();
+
+app.use(
+  session({
+    secret: 'ElimuHub-secrets',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+const generateAndPopulateSession = (userAuthKey = 'None', userEmail, userPassword, duration) => {
+  return (req, res) => {
+    const currentTime = new Date();
+    req.session.logInData = {
+      authKey: userAuthKey,
+      email: userEmail,
+      password: userPassword,
+      sessionDuration: duration,
+      startingTime: currentTime
+    }
+    res.send(req.session);
+  }
+};
+
+// This is the function that check if the session is still valid
+// If valid, the information in the session is left as is, otherwise,
+//the information is either changed or the session is deleted as a whole
+const checkSessionValidity = (req, res) => {
+  const startTime = new Date(req.session.logInData.startingTime);
+  const sessionDuration = req.session.logInData.sessionDuration;
+  const expirationTime = new Date(startTime.getTime() + (sessionDuration * 60));
+  const currentTime = new Date();
+  if (currentTime.getTime() > expirationTime.getTime())
+  {
+    delete req.session.logInData;
+  }
+  res.send("stil on");
+}
 
 const generateQRCode = async (url, filename) => {
   try {
@@ -34,7 +76,6 @@ const passwordGenerator = () => {
 
     return password;
 };
-
 
 const generateAuthKey = (length = 64) => {
   const apiKey = crypto
@@ -70,6 +111,7 @@ const generateApiKey = (email, password) => {
 
   return { key: keyHex, iv: ivHex, encryptedData: encryptedData };
 };
+
 
 
 
@@ -109,4 +151,6 @@ const findUserByEmailAndPassword = async (email, password) => {
   }
 };
 
-module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey, findUserByEmailAndPassword}
+
+module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey, findUserByEmailAndPassword ,generateAndPopulateSession, CheckSessionValidity};
+
