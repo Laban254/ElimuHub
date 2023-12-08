@@ -25,7 +25,7 @@ router.use(
 // insert all the main routes associated with the general user under
 
 router.get("/", home);
-router.get('/startSession', generateAndPopulateSession("userAuthKey", "userEmail", "userPassword", 200));
+router.get('/startSession', generateAndPopulateSession);
 router.get('/sessionValidity', checkSessionValidity)
 router.delete("/delete_user/:userId", delete_user);
 router.get("/:apiKey", populateAuthKeys);
