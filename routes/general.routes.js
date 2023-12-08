@@ -17,7 +17,7 @@ router.use(
 
 // insert all the main routes associated with the general user under
 router.get("/", home);
-router.get('/startSession', generateAndPopulateSession("userAuthKey", "userEmail", "userPassword", 200));
+router.get('/startSession', generateAndPopulateSession);
 router.get('/sessionValidity', checkSessionValidity)
 
 module.exports = router;
