@@ -5,11 +5,24 @@ const qrcode = require('qrcode');
 const fs = require('fs');
 const crypto = require('crypto');
 const user  = require("../models/users");
-
+const bcrypt = require('bcrypt');
+const User = require('../models/users');
 const express = require('express');
 const session = require('express-session');
-
+const os = require('os');
 const app = express();
+const {server} = require('../Server')
+const http = require('http');
+
+const startSessionOptions = {
+  hostname: server.address,
+  path: '/startSession',
+  method: 'GET',
+  port: 3000
+  
+};
+
+
 
 app.use(
   session({
@@ -142,15 +155,50 @@ const decryptApiKey = async (encryptedApiKey, decryptionKeyString, ivString) => 
 
 
 const findUserByEmailAndPassword = async (email, password) => {
-  try {
-    const user = await Users.findOne({ email, password });
-    return user;
-  } catch (error) {
-    console.error('Error finding user:', error);
-    throw new Error('Error finding user');
-  }
+  console.log(email)
+  User.findOne({ email: email }).then((user) => {
+    if (!user) {
+      // User not found
+      console.log('User not found');
+      return({ message: 'Incorrect email or password' });
+    }
+
+    // Use bcrypt.compare to compare the provided password with the hashed password in the database
+    bcrypt.compare(password, user.password, (err, result) => {
+      if (err) {
+        console.error('Error comparing passwords', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+
+      if (result) {
+        // Passwords match, user successfully logged in
+        const req = http.request(startSessionOptions, (res) => {
+          let data = '';
+        
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+        
+          res.on('end', () => {
+            console.log(data);
+          });
+        });
+        
+        req.on('error', (error) => {
+          console.error(error);
+        });
+      } else {
+        // Passwords do not match
+        console.log('Incorrect password');
+        return res.status(401).json({ message: 'Incorrect email or password' });
+      }
+    });
+  }).catch((err) => {
+    console.error('Error finding user', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  });
 };
 
 
-module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey, findUserByEmailAndPassword ,generateAndPopulateSession, CheckSessionValidity};
+module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey, findUserByEmailAndPassword ,generateAndPopulateSession, checkSessionValidity};
 
