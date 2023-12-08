@@ -16,18 +16,16 @@ app.use(
   })
 );
 
-const generateAndPopulateSession = (userAuthKey = 'None', userEmail, userPassword, duration) => {
-  return (req, res) => {
+const generateAndPopulateSession = (req, res) => {
     const currentTime = new Date();
     req.session.logInData = {
-      authKey: userAuthKey,
-      email: userEmail,
-      password: userPassword,
-      sessionDuration: duration,
+      authKey: req.query.authKey,
+      email: req.query.userEmail,
+      password: req.query.userPassword,
+      sessionDuration: req.query.duration,
       startingTime: currentTime
     }
     res.send(req.session);
-  }
 };
 
 // This is the function that check if the session is still valid
