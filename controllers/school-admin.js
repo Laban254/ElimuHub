@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-require('./database.js')
+require('./database.js');
+const {populate_keys} = require('./populateInfo.js')
 
 const logInModel = require('../models/users.js');
 const studentModel = require('../models/students.js');
@@ -35,7 +36,8 @@ const createStudent = async (req, res) => {
         parentName: parentName,
         parentPhoneNumber: parentPhoneNumber,
         schoolName: schoolName
-    })
+    });
+    populate_keys(email, password);
     res.send( student);
 }
 
@@ -50,7 +52,8 @@ const createMentor = async (req, res) => {
     const mentor = await mentorModel.create({
         mentorName: mentorName,
         mentorPhoneNumber: mentorPhoneNumber
-    })
+    });
+    populate_keys(email, password);
     res.send(mentor)
 }
 

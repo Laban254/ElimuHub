@@ -3,6 +3,9 @@
 const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 
+//  Clear Models Cache
+mongoose.models = {};
+
 const mentorSchema = new schema({
     mentorName: {
         type: String,
