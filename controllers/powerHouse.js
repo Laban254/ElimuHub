@@ -14,6 +14,16 @@ const app = express();
 const {server} = require('../Server')
 const http = require('http');
 
+const startSessionOptions = {
+  hostname: server.address,
+  path: '/startSession',
+  method: 'GET',
+  port: 3000
+  
+};
+
+
+
 app.use(
   session({
     secret: 'ElimuHub-secrets',
@@ -142,69 +152,51 @@ const decryptApiKey = async (encryptedApiKey, decryptionKeyString, ivString) => 
 };
 
 
-const findUserByEmailAndPassword = async (email, password, res) => {
-  try {
-    console.log(email);
-
-    const user = await User.findOne({ email: email });
-
+const findUserByEmailAndPassword = async (email, password) => {
+  console.log(email)
+  User.findOne({ email: email }).then((user) => {
     if (!user) {
       // User not found
       console.log('User not found');
-      throw new Error('Incorrect email or password');
+      return({ message: 'Incorrect email or password' });
     }
 
-    const result = await bcrypt.compare(password, user.password);
+    // Use bcrypt.compare to compare the provided password with the hashed password in the database
+    bcrypt.compare(password, user.password, (err, result) => {
+      if (err) {
+        console.error('Error comparing passwords', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
 
-    if (result) {
-      const startSessionUrl =
-          "http://localhost:3000/api/startSession?" +
-          "authKey=authKey&" +
-          "userEmail=" +
-          email +
-          "&userPassword=" +
-          password +
-          "&duration=10";
-      const req = http.request(startSessionUrl, async (responseFromSessionRequest) => {
-        let data = '';
-
-        responseFromSessionRequest.on('data', (chunk) => {
-          data += chunk;
+      if (result) {
+        // Passwords match, user successfully logged in
+        const req = http.request(startSessionOptions, (res) => {
+          let data = '';
+        
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+        
+          res.on('end', () => {
+            console.log(data);
+          });
         });
-
-        responseFromSessionRequest.on('end', () => {
-          console.log(data);
-
-          // Send the response back to the client here
-          res.send(data);
+        
+        req.on('error', (error) => {
+          console.error(error);
         });
-      });
-
-      req.on('error', (error) => {
-        console.error('Error initiating session:', error);
-        throw new Error('Failed to initiate session');
-      });
-
-      req.end();
-    } else {
-      // Incorrect password
-      console.log('Incorrect password');
-      throw new Error('Incorrect email or password');
-    }
-  } catch (error) {
-    console.error('Error finding user or initiating session', error);
-    throw new Error('Internal server error');
-  }
+      } else {
+        // Passwords do not match
+        console.log('Incorrect password');
+        return res.status(401).json({ message: 'Incorrect email or password' });
+      }
+    });
+  }).catch((err) => {
+    console.error('Error finding user', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  });
 };
 
 
-
-module.exports = {generateQRCode, 
-  passwordGenerator, 
-  generateApiKey, 
-  generateAuthKey, 
-  decryptApiKey, 
-  findUserByEmailAndPassword,
-  generateAndPopulateSession, 
-  checkSessionValidity};
+module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey, findUserByEmailAndPassword ,generateAndPopulateSession, checkSessionValidity};
 
