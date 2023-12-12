@@ -13,10 +13,18 @@ const home = (req, res) => {
 }
 
 const logIn = (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  findUserByEmailAndPassword(email, password)
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+    
+    // Call the function and pass the Express response object
+    findUserByEmailAndPassword(email, password, res);
+  } catch (error) {
+    console.error('Error in login route handler:', error);
+    res.status(500).send('Internal Server Error');
+  }
 };
+
 
 
 
