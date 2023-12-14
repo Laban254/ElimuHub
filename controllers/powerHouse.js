@@ -151,7 +151,7 @@ const findUserByEmailAndPassword = async (email, password, res) => {
     if (!user) {
       // User not found
       console.log('User not found');
-      throw new Error('Incorrect email or password');
+      return res.status(401).json({ error: 'User not found' });
     }
 
     const result = await bcrypt.compare(password, user.password);
@@ -189,7 +189,7 @@ const findUserByEmailAndPassword = async (email, password, res) => {
     } else {
       // Incorrect password
       console.log('Incorrect password');
-      throw new Error('Incorrect email or password');
+      throw new Error('Incorrect password');
     }
   } catch (error) {
     console.error('Error finding user or initiating session', error);
