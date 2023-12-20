@@ -152,7 +152,7 @@ const findUserByEmailAndPassword = async (email, password, res) => {
 
     if (result) {
       const startSessionUrl =
-          "http://localhost:3000/api/startSession?" +
+          `${process.env.URL}/api/startSession?` +
           "authKey=authKey&" +
           "userEmail=" +
           email +
