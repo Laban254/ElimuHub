@@ -20,7 +20,6 @@ const accesSchema = new schema({
   authKey: {
     key: {
       type: String,
-      unique: true,
       default: undefined,
     },
     expires: {
