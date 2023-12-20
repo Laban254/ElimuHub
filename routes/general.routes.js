@@ -1,5 +1,5 @@
 const express = require("express");
-const { home, delete_user, logIn } = require("../controllers/general_user.js");
+const { home, delete_user, logIn, cliLogin } = require("../controllers/general_user.js");
 const { generateAndPopulateSession, checkSessionValidity} = require('../controllers/powerHouse.js');
 const session = require('express-session');
 const {populateAuthKeys} = require("../controllers/populateInfo.js");
@@ -23,7 +23,7 @@ router.get("/", home);
 router.get('/startSession', generateAndPopulateSession);
 router.get('/sessionValidity', checkSessionValidity)
 router.delete("/delete_user/:userId", delete_user);
-router.get("/:apiKey", logIn);
+router.get("/:apiKey", cliLogin);
 router.get("/populateAuthKey", populateAuthKeys)
 
 router.post("/login", logIn)
