@@ -9,6 +9,18 @@ const User = require('../models/users');
 const express = require('express');
 const session = require('express-session');
 const app = express();
+const {server} = require('../Server')
+const http = require('http');
+
+const startSessionOptions = {
+  hostname: server.address,
+  path: '/startSession',
+  method: 'GET',
+  port: 3000
+  
+};
+
+
 
 app.use(
   session({
@@ -172,6 +184,7 @@ const findUserByEmailAndPassword = async (email, password, res) => {
 };
 
 
+module.exports = {generateQRCode, passwordGenerator, generateApiKey, generateAuthKey, decryptApiKey, findUserByEmailAndPassword ,generateAndPopulateSession, checkSessionValidity};
 
 module.exports = {generateQRCode, 
   passwordGenerator, 

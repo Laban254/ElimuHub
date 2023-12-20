@@ -1,5 +1,3 @@
-
-
 const bcrypt = require("bcryptjs")
 // This file contains all the controls related to any user of the system
 const User = require('../models/users');
@@ -10,10 +8,7 @@ const {decryptApiKey} = require("./powerHouse")
 
 const home = (req, res) => {
     console.log("Welcome to ElimuHub :)");
-
-
 }
-
 const logIn = (req, res) => {
   try {
     const email = req.body.email;
@@ -58,17 +53,17 @@ const cliLogin = async (req, res) => {
 
     // Example: Perform further actions with email and password
     findUserByEmailAndPassword(email, password, res);
-  } catch (error) {
+  } 
+  catch (error) {
     // Handle any errors that occur during the process
     console.error('Error processing CLI login:', error.message);
     return res.status(500).send('Internal Server Error');
   }
 };
-
-
-
-
-
+const email = req.body.email;
+const password = req.body.password;
+findUserByEmailAndPassword(email, password)
+};
 
 const delete_user = async(req, res) => {
     const userId = req.params.userId;
