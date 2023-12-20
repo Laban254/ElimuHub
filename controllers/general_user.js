@@ -18,6 +18,8 @@ const logIn = (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
+
+    console.log(email);
     
     // Call the function and pass the Express response object
     findUserByEmailAndPassword(email, password, res);
