@@ -19,7 +19,6 @@ app.use(
 );
 
 const generateAndPopulateSession = (req, res) => {
-  console.log("populating");
     const currentTime = new Date();
     req.session.logInData = {
       authKey: req.query.authKey,
