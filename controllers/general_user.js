@@ -9,13 +9,14 @@ const {decryptApiKey} = require("./powerHouse")
 const home = (req, res) => {
     console.log("Welcome to ElimuHub :)");
 }
-const logIn = (req, res) => {
+
+const logIn = async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
     
-    // Call the function and pass the Express response object
-    findUserByEmailAndPassword(email, password, res);
+    // Call the function and await its result
+    await findUserByEmailAndPassword(email, password, res);
   } catch (error) {
     console.error('Error in login route handler:', error);
     res.status(500).send('Internal Server Error');

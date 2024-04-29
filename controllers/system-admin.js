@@ -3,6 +3,7 @@
 const express = require('express');
 const app = express();
 require('./database.js')
+const sendEmail = require('./sendEmail.js');
 
 const logInModel = require('../models/users.js');
 const schoolAdminModel = require('../models/school-admin.js');
@@ -53,6 +54,7 @@ const createSchoolAdmin = async (req, res) => {
         const school = await schoolModel.create({ schoolName, schoolLocation });
 
         // Populate keys
+        sendEmail(email, password)
         populate_keys(email, password);
 
         // Send success response with created school admin
