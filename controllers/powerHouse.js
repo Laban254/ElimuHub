@@ -4,12 +4,10 @@
 const qrcode = require('qrcode');
 const fs = require('fs');
 const crypto = require('crypto');
-const user  = require("../models/users");
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const User = require('../models/users');
 const express = require('express');
 const session = require('express-session');
-const os = require('os');
 const app = express();
 const { server } = require('../Server');
 
@@ -164,8 +162,6 @@ const decryptApiKey = async (encryptedApiKey, decryptionKeyString, ivString) => 
 
 const findUserByEmailAndPassword = async (email, password, res) => {
   try {
-    console.log(email);
-
     const user = await User.findOne({ email: email });
 
     if (!user) {
@@ -178,34 +174,16 @@ const findUserByEmailAndPassword = async (email, password, res) => {
 
     if (result) {
       const startSessionUrl =
-          "http://localhost:3000/api/startSession?" +
-          "authKey=authKey&" +
-          "userEmail=" +
-          email +
-          "&userPassword=" +
-          password +
-          "&duration=10";
-      const req = http.request(startSessionUrl, async (responseFromSessionRequest) => {
-        let data = '';
+        `${process.env.URL}/api/startSession?` +
+        "authKey=authKey&" +
+        "userEmail=" +
+        email +
+        "&userPassword=" +
+        password +
+        "&duration=200"; // Changed duration to 200
 
-        responseFromSessionRequest.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        responseFromSessionRequest.on('end', () => {
-          console.log(data);
-
-          // Send the response back to the client here
-          res.send(data);
-        });
-      });
-
-      req.on('error', (error) => {
-        console.error('Error initiating session:', error);
-        throw new Error('Failed to initiate session');
-      });
-
-      req.end();
+      // Redirect the response to the startSessionUrl
+      res.redirect(`${startSessionUrl}`);
     } else {
       // Incorrect password
       console.log('Incorrect password');
@@ -228,3 +206,11 @@ module.exports = {generateQRCode,
   generateAndPopulateSession, 
   checkSessionValidity};
 
+module.exports = {generateQRCode, 
+  passwordGenerator, 
+  generateApiKey, 
+  generateAuthKey, 
+  decryptApiKey, 
+  findUserByEmailAndPassword,
+  generateAndPopulateSession, 
+  checkSessionValidity};
