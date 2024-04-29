@@ -10,11 +10,6 @@ const schoolAdminSchema = new schema({
         type: Number,
         required: true,
         unique: true
-    },
-    schoolName: {
-        type: String,
-        required: true, 
-        unique: true
     }
 });
 
