@@ -2,13 +2,13 @@ const express = require('express');
 const app = express();
 
 // load the environment variable configurations
-require ('dotenv').config();
+require('dotenv').config();
 
 const port = process.env.PORT || 3000;
 
 // Define your API routes
 app.use('/api', require('./routes/general.routes.js'));
-app.use('/api/system-admin',require('./routes/system-admin.routes.js'));
+app.use('/api/system-admin', require('./routes/system-admin.routes.js'));
 app.use('/api/school-admin', require('./routes/school-admin.routes.js'));
 app.use('/api/info', require('./routes/information.routes.js'))
 app.use('/api/resources', require('./routes/resources.routes.js'));
@@ -25,6 +25,16 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+const server = app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
+
+// Export the server object and a function to initialize modules
+module.exports = {
+  app,
+  server,
+  initializeModules: (server) => {
+    require('./controllers/powerHouse')(server);
+  }
+};
+

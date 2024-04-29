@@ -54,7 +54,7 @@ const cliLogin = async (req, res) => {
     // Destructure the apiKeyObject to extract email and password
     const { email, password } = apiKeyObject;
 
-    // Example: Perform further actions with email and password
+    // Call the function to find user by email and password
     findUserByEmailAndPassword(email, password, res);
   } catch (error) {
     // Handle any errors that occur during the process

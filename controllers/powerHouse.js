@@ -11,8 +11,28 @@ const express = require('express');
 const session = require('express-session');
 const os = require('os');
 const app = express();
-const {server} = require('../Server')
+const { server } = require('../Server');
+
 const http = require('http');
+
+// const startSessionOptions = {
+//   hostname: server.address,
+//   path: '/startSession',
+//   method: 'GET',
+//   port: 3000
+  
+// };
+
+
+module.exports = (server) => {
+  const startSessionOptions = {
+    hostname: server.address(),
+    path: '/startSession',
+    method: 'GET',
+    port: 3000
+  };
+  };
+
 
 app.use(
   session({
